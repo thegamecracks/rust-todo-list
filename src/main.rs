@@ -134,7 +134,7 @@ impl ProgramInterface {
             }
             Command::Move(ix_old, ix_new) => {
                 self.todo_list.move_item(*ix_old, *ix_new);
-                println!("Swapped items #{} and #{} around", ix_old + 1, ix_new + 1);
+                println!("Moved #{} to #{}", ix_old + 1, ix_new + 1);
             }
             Command::Help => println!("{HELP_MESSAGE}"),
             Command::Quit => (),
