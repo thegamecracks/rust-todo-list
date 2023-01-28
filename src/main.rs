@@ -10,7 +10,7 @@ use thiserror::Error;
 use models::*;
 use serialize::*;
 
-const TODO_LIST_FILE_PATH: &str = "data.toml";
+const TODO_LIST_FILE_PATH: &str = "todo_list.toml";
 const HELP_MESSAGE: &str = "\
 1. Add a new item
 2. Remove an existing item
