@@ -31,6 +31,15 @@ pub enum Command {
     Quit,
 }
 
+/// Represents an error when interpreting the user's command choice fails.
+#[derive(Error, Debug)]
+pub enum CommandError {
+    #[error("{0} items are required")]
+    InsufficientItems(usize),
+    #[error("unknown choice provided")]
+    UnknownChoice,
+}
+
 /// Provides a command-line user interface for interacting with a `TodoList`.
 pub struct ProgramInterface {
     todo_list: TodoList,
@@ -124,7 +133,25 @@ impl ProgramInterface {
         }
     }
 
-    // Input
+    /// Prints the current state of the todo list.
+    ///
+    /// # Panics
+    ///
+    /// Panics if writing to `io::stdout` fails.
+    pub fn print_todo_list(&self) {
+        for (i, item) in self.todo_list.iter().enumerate() {
+            let i = i + 1;
+            let checkmark = if item.completed { "[X]" } else { "[ ]" };
+            println!("{checkmark} {i}. {}", item.description);
+        }
+
+        if self.todo_list.is_empty() {
+            println!("No items to show");
+        }
+
+        let local = self.todo_list.last_updated.with_timezone(&chrono::Local);
+        println!("Last updated at {}", local.format("%d/%m/%Y %H:%M:%S"));
+    }
 
     /// Retrieves any followup input from the user according to the choice
     /// they selected.
@@ -232,37 +259,6 @@ impl ProgramInterface {
             return n - 1;
         }
     }
-
-    // Output
-
-    /// Prints the current state of the todo list.
-    ///
-    /// # Panics
-    ///
-    /// Panics if writing to `io::stdout` fails.
-    pub fn print_todo_list(&self) {
-        for (i, item) in self.todo_list.iter().enumerate() {
-            let i = i + 1;
-            let checkmark = if item.completed { "[X]" } else { "[ ]" };
-            println!("{checkmark} {i}. {}", item.description);
-        }
-
-        if self.todo_list.is_empty() {
-            println!("No items to show");
-        }
-
-        let local = self.todo_list.last_updated.with_timezone(&chrono::Local);
-        println!("Last updated at {}", local.format("%d/%m/%Y %H:%M:%S"));
-    }
-}
-
-/// Represents an error when interpreting the user's command choice fails.
-#[derive(Error, Debug)]
-pub enum CommandError {
-    #[error("{0} items are required")]
-    InsufficientItems(usize),
-    #[error("unknown choice provided")]
-    UnknownChoice,
 }
 
 fn main() {
