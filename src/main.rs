@@ -20,6 +20,7 @@ const HELP_MESSAGE: &str = "\
 0. Quit\
 ";
 
+/// A type representing various commands that the user can select.
 #[derive(PartialEq, Eq)]
 enum Command {
     Add(String),
@@ -30,11 +31,19 @@ enum Command {
     Quit,
 }
 
+/// Provides a command-line user interface for interacting with a `TodoList`.
 struct ProgramInterface {
     todo_list: TodoList,
 }
 
 impl ProgramInterface {
+    /// Repeatedly runs `input_command()` and `exec_command()` until the user
+    /// chooses to quit.
+    ///
+    /// # Panics
+    ///
+    /// Panics if writing to `io::stdout` fails, or if reading
+    /// from `io::stdin` fails.
     pub fn run_loop(&mut self) {
         loop {
             let command = self.input_command();
@@ -50,6 +59,13 @@ impl ProgramInterface {
         }
     }
 
+    /// Prompts the user, potentially more than once, to input a command
+    /// along with its arguments.
+    ///
+    /// # Panics
+    ///
+    /// Panics if writing to `io::stdout` fails, or if reading
+    /// from `io::stdin` fails.
     pub fn input_command(&self) -> Command {
         const DEFAULT_PROMPT: &str = "Select a number: ";
         let mut prompt = DEFAULT_PROMPT;
@@ -76,6 +92,11 @@ impl ProgramInterface {
         }
     }
 
+    /// Executes the given command, modifying the todo list if required.
+    ///
+    /// # Panics
+    ///
+    /// Panics if writing to `io::stdout` fails.
     pub fn exec_command(&mut self, command: &Command) {
         match command {
             Command::Add(description) => {
@@ -105,6 +126,17 @@ impl ProgramInterface {
 
     // Input
 
+    /// Retrieves any followup input from the user according to the choice
+    /// they selected.
+    ///
+    /// # Errors
+    ///
+    /// A `CommandError` is returned if the choice given is invalid.
+    ///
+    /// # Panics
+    ///
+    /// Panics if writing to `io::stdout` fails, or if reading
+    /// from `io::stdin` fails.
     fn input_command_arguments(&self, choice: usize) -> Result<Command, CommandError> {
         match choice {
             1 => {
@@ -143,6 +175,12 @@ impl ProgramInterface {
         }
     }
 
+    /// Prompts the user and retrieves a single line of input.
+    ///
+    /// # Panics
+    ///
+    /// Panics if writing to `io::stdout` fails, or if reading
+    /// from `io::stdin` fails.
     fn input_line(prompt: &str) -> String {
         let mut input = String::new();
 
@@ -155,6 +193,12 @@ impl ProgramInterface {
         input.trim().to_string()
     }
 
+    /// Prompts the user, potentially more than once, to input a `usize` integer.
+    ///
+    /// # Panics
+    ///
+    /// Panics if writing to `io::stdout` fails, or if reading
+    /// from `io::stdin` fails.
     fn input_integer(mut prompt: &str) -> usize {
         loop {
             match Self::input_line(prompt).parse::<usize>() {
@@ -166,6 +210,13 @@ impl ProgramInterface {
         }
     }
 
+    /// Prompts the user, potentially more than once, to input an integer
+    /// corresponding to a valid index in `todo_list`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if writing to `io::stdout` fails, or if reading
+    /// from `io::stdin` fails.
     fn input_item_index(&self, prompt: &str) -> usize {
         let length = self.todo_list.len();
         let invalid_prompt = format!("Must be within 1 and {length}: ");
@@ -184,6 +235,11 @@ impl ProgramInterface {
 
     // Output
 
+    /// Prints the current state of the todo list.
+    ///
+    /// # Panics
+    ///
+    /// Panics if writing to `io::stdout` fails.
     fn print_todo_list(&self) {
         for (i, item) in self.todo_list.iter().enumerate() {
             let i = i + 1;
@@ -200,6 +256,7 @@ impl ProgramInterface {
     }
 }
 
+/// Represents an error when interpreting the user's command choice fails.
 #[derive(Error, Debug)]
 enum CommandError {
     #[error("{0} items are required")]
