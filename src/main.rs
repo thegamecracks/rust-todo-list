@@ -76,6 +76,35 @@ impl ProgramInterface {
         }
     }
 
+    pub fn exec_command(&mut self, command: &Command) {
+        match command {
+            Command::Add(description) => {
+                self.todo_list.add_item(TodoItem {
+                    description: description.to_string(),
+                    ..Default::default()
+                });
+                println!("Added item #{}", self.todo_list.items.len());
+            }
+            Command::Remove(index) => {
+                self.todo_list.remove_item(*index);
+                println!("Removed item #{}", index + 1);
+            }
+            Command::ToggleCompletion(index) => {
+                let completed = self.todo_list.toggle_completion(*index);
+                let completed = if completed { "completed" } else { "incomplete" };
+                println!("Marked item #{} as {}", index + 1, completed);
+            }
+            Command::Move(ix_old, ix_new) => {
+                self.todo_list.move_item(*ix_old, *ix_new);
+                println!("Moved #{} to #{}", ix_old + 1, ix_new + 1);
+            }
+            Command::Help => println!("{HELP_MESSAGE}"),
+            Command::Quit => (),
+        }
+    }
+
+    // Input
+
     fn input_command_arguments(&self, choice: usize) -> Result<Command, CommandError> {
         match choice {
             1 => {
@@ -113,35 +142,6 @@ impl ProgramInterface {
             _ => Err(CommandError::UnknownChoice),
         }
     }
-
-    pub fn exec_command(&mut self, command: &Command) {
-        match command {
-            Command::Add(description) => {
-                self.todo_list.add_item(TodoItem {
-                    description: description.to_string(),
-                    ..Default::default()
-                });
-                println!("Added item #{}", self.todo_list.items.len());
-            }
-            Command::Remove(index) => {
-                self.todo_list.remove_item(*index);
-                println!("Removed item #{}", index + 1);
-            }
-            Command::ToggleCompletion(index) => {
-                let completed = self.todo_list.toggle_completion(*index);
-                let completed = if completed { "completed" } else { "incomplete" };
-                println!("Marked item #{} as {}", index + 1, completed);
-            }
-            Command::Move(ix_old, ix_new) => {
-                self.todo_list.move_item(*ix_old, *ix_new);
-                println!("Moved #{} to #{}", ix_old + 1, ix_new + 1);
-            }
-            Command::Help => println!("{HELP_MESSAGE}"),
-            Command::Quit => (),
-        }
-    }
-
-    // Input
 
     fn input_line(prompt: &str) -> String {
         let mut input = String::new();
