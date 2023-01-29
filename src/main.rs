@@ -83,7 +83,7 @@ impl ProgramInterface {
                     description: description.to_string(),
                     ..Default::default()
                 });
-                println!("Added item #{}", self.todo_list.items.len());
+                println!("Added item #{}", self.todo_list.len());
             }
             Command::Remove(index) => {
                 self.todo_list.remove_item(*index);
@@ -111,7 +111,7 @@ impl ProgramInterface {
                 let description = Self::input_line("Describe your todo item: ");
                 Ok(Command::Add(description))
             }
-            2 => match self.todo_list.items.len().cmp(&1) {
+            2 => match self.todo_list.len().cmp(&1) {
                 Ordering::Less => Err(CommandError::InsufficientItems(1)),
                 Ordering::Equal => Ok(Command::Remove(0)),
                 Ordering::Greater => {
@@ -119,7 +119,7 @@ impl ProgramInterface {
                     Ok(Command::Remove(index))
                 }
             },
-            3 => match self.todo_list.items.len().cmp(&1) {
+            3 => match self.todo_list.len().cmp(&1) {
                 Ordering::Less => Err(CommandError::InsufficientItems(1)),
                 Ordering::Equal => Ok(Command::ToggleCompletion(0)),
                 Ordering::Greater => {
@@ -128,7 +128,7 @@ impl ProgramInterface {
                     Ok(Command::ToggleCompletion(index))
                 }
             },
-            4 => match self.todo_list.items.len().cmp(&2) {
+            4 => match self.todo_list.len().cmp(&2) {
                 Ordering::Less => Err(CommandError::InsufficientItems(2)),
                 Ordering::Equal => Ok(Command::Move(0, 1)),
                 Ordering::Greater => {
@@ -167,7 +167,7 @@ impl ProgramInterface {
     }
 
     fn input_item_index(&self, prompt: &str) -> usize {
-        let length = self.todo_list.items.len();
+        let length = self.todo_list.len();
         let invalid_prompt = format!("Must be within 1 and {length}: ");
         let mut current_prompt = prompt;
 
@@ -185,13 +185,13 @@ impl ProgramInterface {
     // Output
 
     fn print_todo_list(&self) {
-        for (i, item) in self.todo_list.items.iter().enumerate() {
+        for (i, item) in self.todo_list.iter().enumerate() {
             let i = i + 1;
             let checkmark = if item.completed { "[X]" } else { "[ ]" };
             println!("{checkmark} {i}. {}", item.description);
         }
 
-        if self.todo_list.items.is_empty() {
+        if self.todo_list.is_empty() {
             println!("No items to show");
         }
 

@@ -9,11 +9,27 @@ pub struct TodoItem {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TodoList {
-    pub items: Vec<TodoItem>,
+    items: Vec<TodoItem>,
     pub last_updated: DateTime<Utc>,
 }
 
 impl TodoList {
+    // Item access
+
+    pub fn len(&self) -> usize {
+        self.items.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.items.is_empty()
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, TodoItem> {
+        self.items.iter()
+    }
+
+    // Item manipulation
+
     pub fn add_item(&mut self, item: TodoItem) {
         self.items.push(item);
         self.set_last_updated();
