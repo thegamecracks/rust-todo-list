@@ -1,5 +1,5 @@
-mod models;
-mod serialize;
+pub mod models;
+pub mod serialize;
 
 use std::cmp::Ordering;
 use std::io;
@@ -7,10 +7,10 @@ use std::io::Write;
 
 use thiserror::Error;
 
-use models::*;
-use serialize::*;
+pub use models::*;
+pub use serialize::*;
 
-const TODO_LIST_FILE_PATH: &str = "todo_list.toml";
+pub const TODO_LIST_FILE_PATH: &str = "todo_list.toml";
 const HELP_MESSAGE: &str = "\
 1. Add a new item
 2. Remove an existing item
@@ -22,7 +22,7 @@ const HELP_MESSAGE: &str = "\
 
 /// A type representing various commands that the user can select.
 #[derive(PartialEq, Eq)]
-enum Command {
+pub enum Command {
     Add(String),
     Remove(usize),
     ToggleCompletion(usize),
@@ -32,7 +32,7 @@ enum Command {
 }
 
 /// Provides a command-line user interface for interacting with a `TodoList`.
-struct ProgramInterface {
+pub struct ProgramInterface {
     todo_list: TodoList,
 }
 
@@ -240,7 +240,7 @@ impl ProgramInterface {
     /// # Panics
     ///
     /// Panics if writing to `io::stdout` fails.
-    fn print_todo_list(&self) {
+    pub fn print_todo_list(&self) {
         for (i, item) in self.todo_list.iter().enumerate() {
             let i = i + 1;
             let checkmark = if item.completed { "[X]" } else { "[ ]" };
@@ -258,7 +258,7 @@ impl ProgramInterface {
 
 /// Represents an error when interpreting the user's command choice fails.
 #[derive(Error, Debug)]
-enum CommandError {
+pub enum CommandError {
     #[error("{0} items are required")]
     InsufficientItems(usize),
     #[error("unknown choice provided")]
