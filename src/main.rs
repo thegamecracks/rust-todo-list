@@ -1,14 +1,10 @@
-pub mod models;
-pub mod serialize;
-
 use std::cmp::Ordering;
 use std::io;
 use std::io::Write;
 
 use thiserror::Error;
 
-pub use models::*;
-pub use serialize::*;
+use rust_todo_list::*;
 
 pub const TODO_LIST_FILE_PATH: &str = "todo_list.toml";
 const HELP_MESSAGE: &str = "\
